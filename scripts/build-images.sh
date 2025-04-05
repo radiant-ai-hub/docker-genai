@@ -68,9 +68,8 @@ if [ "$(uname -m)" = "arm64" ]; then
   build
 else
   if [[ $(hostname -I) == *"132.249.225.85"* ]]; then
-    # LABEL=rsm-msba-genai-gpu
-    # echo $LABEL
-
+    LABEL=rsm-msba-genai-gpu
+    echo $LABEL
     # build
   else
 
