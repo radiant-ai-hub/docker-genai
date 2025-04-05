@@ -1,0 +1,23 @@
+services:
+  rsm-msba:
+    image: vnijs/rsm-msba-genai-arm:latest
+    container_name: rsm-msba-genai-arm
+    environment:
+      TZ: America/Los_Angeles
+      USER: jovyan
+      HOME: /home/jovyan
+      SHELL: /bin/zsh
+      RSMBASE: /home/jovyan/.rsm-msba
+    volumes:
+      - ${HOME}:/home/jovyan
+      - pg_data:/var/lib/postgresql/16/main
+    networks:
+      - rsm-genai
+
+networks:
+  rsm-genai:
+    name: rsm-genai
+
+volumes:
+  pg_data:
+    name: pg_data
