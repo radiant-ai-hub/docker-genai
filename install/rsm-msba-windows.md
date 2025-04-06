@@ -3,10 +3,8 @@
 - [Installing the RSM-MSBA-GENAI-INTEL computing environment on Windows](#installing-the-rsm-msba-genai-intel-computing-environment-on-windows)
 - [Updating the RSM-MSBA-GENAI-INTEL computing environment on Windows](#updating-the-rsm-msba-genai-intel-computing-environment-on-windows)
 - [Using VS Code](#using-vs-code)
-- [Connecting to postgresql](#connecting-to-postgresql)
-- [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
+- [Installing Python packages locally](#installing-python-and-r-packages-locally)
 - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
 - [Getting help](#getting-help)
 - [Trouble shooting](#trouble-shooting)
 - [Optional](#optional)
@@ -117,9 +115,16 @@ Now Ubuntu should be up to date and ready to accept commands to clone the docker
 
 ```bash
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh"' >> ~/.zshrc;
+source ~/.zshrc;
 ```
 
-After running the commands above you will be able to start the docker container by typing `~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~` from an Ubuntu terminal.
+Now you should be able to use `launch` to start the docker container with any base directory that you want. For example, if you want to run the container with "~/test-dir" as the project directory you can use the below:
+
+```bash
+cd ~;
+launch -v genai-test;
+```
 
 Next, determine your Windows username by running the code below from an Ubuntu terminal:
 
@@ -190,12 +195,7 @@ Next, re-run the code from Step 4 above, starting with the command:
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker;
 ```
 
-If you do **not** have a file called `launch-rsm-msba.bat` on your Desktop, you can create one by copy-and-pasting the code below in to a text file using notepad. The "pause" line can be removed later if all works well. Open VS Code or notepad, copy-and-paste the code below into the editor, and save the file as `launch-rsm-msba.bat`. After saving, double-click the file to start the docker container.
 
-```bash
-wt.exe wsl.exe ~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~
-pause
-```
 
 **Step 4**: Check that you can launch Radiant
 
@@ -224,7 +224,8 @@ If for some reason you are having trouble updating either the container or the l
 docker pull vnijs/rsm-msba-genai-intel;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh"' >> ~/.zshrc;
+source ~/.zshrc;
 ```
 
 ## Using VS Code
@@ -260,107 +261,50 @@ You can even open and run Jupyter Notebooks in VS Code
 
 - <a href="https://code.visualstudio.com/docs/datascience/jupyter-notebooks" target="_blank">Jupyter Notebooks in VS Code</a>
 
-A major new feature in VS Code is the ability to use AI to help you write code. For more information see the links below:
+## Setting up your Python environment
 
-- <a href="https://code.visualstudio.com/blogs/2023/03/30/vscode-copilot" target="_blank">VS Code Copilot</a>
-- <a href="https://code.visualstudio.com/docs/editor/artificial-intelligence" target="_blank">VS Code AI</a>
-
-### Trouble shooting
-
-If you see `root` as the username when you type `whoami` in an Ubuntu terminal you will need to reset your username for WSL2. Please review step 4 in the install process for more guidance.
-
-## Installing Python and R packages locally
-
-To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile`. You can edit the file by running `code ~/.Rprofile` in a VS Code terminal.
-
-```r
-if (Sys.info()["sysname"] == "Linux") {
-  options(repos = c(
-    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
-    CRAN = "https://cloud.r-project.org"
-  ))
-} else {
-  options(repos = c(
-    CRAN = "https://cloud.r-project.org"
-  ))
-}
-```
-
-This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in R and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` to install packages locally in the future.
-
-```r
-fs::dir_create(Sys.getenv("R_LIBS_USER"), recurse = TRUE)
-install.packages("fortunes", lib = Sys.getenv("R_LIBS_USER"))
-```
-
-To install Python modules that will **not** persist after restarting the docker container, enter code like the below from a terminal in VS Code:
+Initialize the environment in the project directory (note the "."):
 
 ```bash
-pip install pyasn1
+uv init .
 ```
 
-After installing a module you will have to restart any running Python kernels to `import` the module in your code.
-
-### Using pip to install python packages
-
-We recommend you use `pip` to install any additional packages you might need. For example, you can use the command below to install a new version of the `pyrsm` package that you will use regularly throughout the Rady MSBA program. Note that adding `--user` is important to ensure the package is still available after you restart the docker container
+Create a virtual environment with Python 3.12.7 where you can install packages specifically for your project:
 
 ```bash
-pip install --user --upgrade pyrsm
+uv venv --python 3.12.7
 ```
 
-### Removing locally installed packages
-
-To remove locally installed R packages press 8 (and Enter) in the launch menu and follow the prompts. To remove Python modules installed locally using `pip` press 9 (and Enter) in the launch menu
-
-## Committing changes to the computing environment
-
-By default re-starting the docker computing environment will remove any changes you made. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to keep changes.
-
-As shown in the previous section, you can install R and Python packages locally rather than in the container. These packages will still be available after a container restart.
-
-To install binary R packages for Ubuntu Linux you can use the command below. These packages will *not* be installed locally and would normally not be available after a restart.
+Once you have the basic setup done using the code chunk above you should be able to add python packages. The `pyrsm` packages will install several dependencies that you will likely need (e.g., sklearn, pandas, ipykernel, etc.).
 
 ```bash
-sudo apt update;
-sudo apt install r-cran-ada;
+uv add pyrsm
 ```
 
-Similarly, some R-packages have requirements that need to be installed in the container (e.g., the `rgdal` package). The following two linux packages would need to be installed from a terminal in the container as follows:
+Common UV commands for managing packages are listed below. Note that these will give directory specific results:
 
 ```bash
-sudo apt update;
-sudo apt install libgdal-dev libproj-dev;
+uv add <package-name>    # Install a package
+uv remove <package-name> # Remove a package
+uv pip list              # List installed packages in current directory
+uv run python-file.py    # Run a Python file using the virtual environment
 ```
 
-After completing the step above you can install the `rgdal` R-package locally using the following from R:
+For more information about UV:
 
-`install.packages("rgdal", lib = Sys.getenv("R_LIBS_USER"))`
+* <https://www.youtube.com/watch?v=qh98qOND6MI>
+* <https://www.datacamp.com/tutorial/python-uv>
+* <https://github.com/astral-sh/uv>
 
-To save (or commit) these changes so they *will* be present after a (container) restart type, for example, `c myimage` (and Enter). This creates a new docker image with your changes and also a new launch script on your Desktop with the name `launch-rsm-msba-myimage.sh` that you can use to launch your customized environment in the future.
+Add UV shell completions (optional but recommended):
 
-If you want to share your customized version of the container with others (e.g., team members) you can push it is to Docker Hub <a href="https://hub.docker.com" target="_blank">https://hub.docker.com</a> by following the menu dialog after typing, e.g., `c myimage` (and Enter). To create an account on Docker Hub go to <a href="https://hub.docker.com/signup" target="_blank">https://hub.docker.com/signup</a>.
-
-If you want to remove specific images from your computer run the commands below from a (bash) terminal. The first command generates a list of the images you have available.
-
-`docker image ls;`
-
-Select the IMAGE ID for the image you want to remove, e.g., `42b88eb6adf8`, and then run the following command with the correct image id:
-
-`docker rmi 42b88eb6adf8;`
-
-For additional resources on developing docker images see the links below:
-
-- <https://colinfay.me/docker-r-reproducibility>
-- <https://www.fullstackpython.com/docker.html>
+```bash
+echo 'eval "$(uv generate-shell-completion zsh)"' >> ~/.rsm-msba/zsh/.zshrc
+```
 
 ## Cleanup
 
-To remove any locally installed R-packages, press 6 (+ Enter) in the launch menu. To remove locally installed Python modules press 7 (+ Enter) in the launch menu.
-
-> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal in VS Code and type `clean`. Then follow the prompts to indicate what needs to be removed.
-
-You should always stop the `rsm-msba-genai-intel` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove locally installed R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-genai-intel):
+You should always stop the `rsm-msba-genai-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove local R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-genai-arm):
 
 ```bash
 rm -rf ~/.rsm-msba;
@@ -372,9 +316,8 @@ docker pull vnijs/rsm-msba-genai-intel;
 
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
-* `launch -t 3.0.0` ensures a specific version of the docker container is used. Suppose you used version 3.0.0 for a project. Running the launch script with `-t 3.0.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
+* `launch -t 0.1.0` ensures a specific version of the docker container is used. Suppose you used version 0.1.0 for a project. Running the launch script with `-t 0.1.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
 * `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
-* `launch -d ~/project_1` will treat the `project_1` directory on the host system (i.e., your Windows computer) as the project home directory in the docker container. This is an additional level of isolation that can help ensure your work is reproducible in the future. This can be particularly useful in combination with the `-t` option as this will make a copy of the launch script with the appropriate `tag` or `version` already set. Simply double-click the script in the `project_1` directory and you will be back in the development environment you used when you completed the project
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 

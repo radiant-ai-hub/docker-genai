@@ -376,7 +376,7 @@ else
     echo $BOUNDARY
     echo "Press (1) to show a (ZSH) terminal, followed by [ENTER]:"
     echo "Press (2) to start N8N, followed by [ENTER]:"
-    echo "Press (3) to start a Playwright container for Web Automation, followed by [ENTER]:"
+    echo "Press (3) to start Playwright for Web Automation, followed by [ENTER]:"
     echo "Press (4) to setup Git and GitHub, followed by [ENTER]:"
     echo "Press (5) to update the ${LABEL} container, followed by [ENTER]:"
     echo "Press (6) to update the launch script, followed by [ENTER]:"

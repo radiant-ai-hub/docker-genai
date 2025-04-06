@@ -44,7 +44,7 @@ function launch_usage() {
   echo "  -s, --show        Show all output generated on launch"
   echo "  -h, --help        Print help and exit"
   echo ""
-  echo "Example: $0 --tag 1.0.0 --volume ~/project_1"
+  echo "Example: $0 --tag 0.1.0 --volume ~/project_1"
   echo ""
   exit 1
 }
@@ -376,7 +376,7 @@ else
     echo $BOUNDARY
     echo "Press (1) to show a (ZSH) terminal, followed by [ENTER]:"
     echo "Press (2) to start N8N, followed by [ENTER]:"
-    echo "Press (3) to start a Playwright container for Web Automation, followed by [ENTER]:"
+    echo "Press (3) to start Playwright for Web Automation, followed by [ENTER]:"
     echo "Press (4) to setup Git and GitHub, followed by [ENTER]:"
     echo "Press (5) to update the ${LABEL} container, followed by [ENTER]:"
     echo "Press (6) to update the launch script, followed by [ENTER]:"
@@ -582,7 +582,7 @@ else
       echo $BOUNDARY
       echo "Do you want to push this image to Docker hub (y/n)?"
       echo "Note: This requires an account at https://hub.docker.com/"
-      echo "Note: To specify a version tag type, e.g., y 1.0.0"
+      echo "Note: To specify a version tag type, e.g., y 0.1.0"
       echo $BOUNDARY
       read menu_push menu_tag
       if [ "${menu_push}" == "y" ]; then

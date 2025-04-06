@@ -3,9 +3,8 @@
 - [Installing the RSM-MSBA-GENAI-ARM computing environment on macOS systems with and ARM chip (e.g., M3)](#installing-the-rsm-msba-genai-arm-computing-environment-on-macos-systems-with-an-ARM-chip)
 - [Updating the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip](#updating-the-rsm-msba-genai-arm-computing-environment-on-macos-systems-with-an-ARM-chip)
 - [Using VS Code](#using-vs-code)
-- [Installing Python and R packages locally](#installing-python-and-r-packages-locally)
+- [Installing Python Packages locally](#installing-python-and-r-packages-locally)
 - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
-- [Cleanup](#cleanup)
 - [Getting help](#getting-help)
 - [Trouble shooting](#trouble-shooting)
 - [Optional](#optional)
@@ -18,7 +17,7 @@ Please follow the instructions below to install the rsm-msba-genai-arm computing
 
 ![docker](figures/docker-icon.png)
 
-[download docker for macOS with an ARM chip (e.g., M3)](https://desktop.docker.com/mac/stable/arm64/Docker.dmg)
+[download docker for macOS with an ARM chip (e.g., M3, M4, etc.)](https://desktop.docker.com/mac/stable/arm64/Docker.dmg)
 
 You should change the (maximum) resources docker is allowed to use on your system. We recommend you set this to approximately 50% of the maximum available on your system.
 
@@ -38,33 +37,26 @@ You will need the macOS command line developer tools for the next steps. Follow 
 xcode-select --install;
 ```
 
-**Step 3**: Now copy-and-paste the code below
+**Step 3**: Now copy-and-paste the code below and run it in iTerm (macOS) or an Ubuntu shell (Windows)
 
 ```bash
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-cp -p ~/git/docker-genai/launch-rsm-msba-genai-arm.sh ~/Desktop/launch-rsm-msba.command;
-~/Desktop/launch-rsm-msba.command;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh"' >> ~/.zshrc;
+source ~/.zshrc;
+```
+
+Now you should be able to use `launch` to start the docker container with any base directory that you want. For example, if you want to run the container with "~/test-dir" as the project directory you can use the below:
+
+```bash
+cd ~;
+launch -v genai-test;
 ```
 
 This step will clone and start up a script that will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the container to download and follow any prompts. Once the download is complete you should see a menu as in the screenshot below.
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
-The code above also copies the file `launch-rsm-msba-genai-arm.sh` to `launch-rsm-msba.command` on your Desktop. You will be able to double-click this file to start the container again in the future.
-
-Run the command below to launch the docker container from the command line.
-
-```bash
-~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~;
-```
-
-**Step 4**: Check that you can launch Radiant
-
-You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) Radiant should start up in your default web browser.
-
-> Important: Always use q (+ Enter) to shutdown the computing environment
-
-<img src="figures/radiant-data-manage.png" width="500px">
+**Step 4**: Finalize setup
 
 To finalize the setup, open a terminal inside the docker container by pressing `1` and `Enter` in the launch menu. Then run the command below:
 
@@ -75,7 +67,7 @@ exit;
 
 ## Updating the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip
 
-To update the container use the launch script and press 6 (+ Enter). To update the launch script itself, press 7 (+ Enter).
+To update the container use the launch script and press 5 (+ Enter). To update the launch script itself, press 6 (+ Enter).
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
@@ -85,14 +77,13 @@ If for some reason you are having trouble updating either the container or the l
 docker pull vnijs/rsm-msba-genai-arm;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-cp -p ~/git/docker-genai/launch-rsm-msba-genai-arm.sh ~/Desktop/launch-rsm-msba.command;
 ```
 
 ## Using VS Code
 
 Microsoft's open-source integrated development environment (IDE), VS Code or Visual Studio Code, was the most popular development environment according to a [Stack Overflow developer survey](https://survey.stackoverflow.co/2022#section-most-popular-technologies-integrated-development-environment). VS Code is widely used by Google developers and is the [default development environment at Facebook](https://www.zdnet.com/article/facebook-microsofts-visual-studio-code-is-now-our-default-development-platform/).
 
-VS Code can be installed from the link below and is an excellent, and very popular, editor for Python, R, and many other programming languages.
+VS Code can be installed from the link below and is an excellent, and very popular, editor for Python and many other programming languages.
 
 <a href="https://code.visualstudio.com/download" target="_blank">https://code.visualstudio.com/download</a>
 
@@ -129,100 +120,48 @@ You can even open and run Jupyter Notebooks in VS Code
 
 - <a href="https://code.visualstudio.com/docs/datascience/jupyter-notebooks" target="_blank">Jupyter Notebooks in VS Code</a>
 
-A major new feature in VS Code is the ability to use AI to help you write code. For more information see the links below:
+## Setting up your Python environment
 
-- <a href="https://code.visualstudio.com/docs/copilot/overview" target="_blank">VS Code Copilot</a>
-
-## Installing Python and R packages locally
-
-To install the latest version of R-packages you need, add the lines of code shown below to `~/.Rprofile`. You can edit the file by running `code ~/.Rprofile` in a VS Code terminal.
-
-```r
-if (Sys.info()["sysname"] == "Linux") {
-  options(repos = c(
-    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
-    CRAN = "https://cloud.r-project.org"
-  ))
-} else {
-  options(repos = c(
-    CRAN = "https://cloud.r-project.org"
-  ))
-}
-```
-
-This will be done for you automatically if you run the `setup` command from a terminal inside the docker container. To install R packages that will persist after restarting the docker container, enter code like the below in R and follow any prompts. After doing this once, you can use `install.packages("some-other-package")` to install packages locally in the future.
-
-```r
-fs::dir_create(Sys.getenv("R_LIBS_USER"), recurse = TRUE)
-install.packages("fortunes", lib = Sys.getenv("R_LIBS_USER"))
-```
-
-To install Python modules that will **not** persist after restarting the docker container, enter code like the below from a terminal in VS Code:
+Initialize the environment in the project directory (note the "."):
 
 ```bash
-pip install pyasn1
+uv init .
 ```
 
-After installing a module you will have to restart any running Python kernels to `import` the module in your code.
-
-### Using pip to install python packages
-
-We recommend you use `pip` to install any additional packages you might need. For example, you can use the command below to install a new version of the `pyrsm` package that you will use regularly throughout the Rady MSBA program. Note that adding `--user` is important to ensure the package is still available after you restart the docker container
+Create a virtual environment with Python 3.12.7 where you can install packages specifically for your project:
 
 ```bash
-pip install --user --upgrade pyrsm
+uv venv --python 3.12.7
 ```
 
-### Removing locally installed packages
-
-To remove locally installed R packages press 6 (and Enter) in the launch menu and follow the prompts. To remove Python modules installed locally using `pip` press 7 (and Enter) in the launch menu
-
-## Committing changes to the computing environment
-
-By default re-starting the docker computing environment will remove any changes you made. This allows you to experiment freely, without having to worry about "breaking" things. However, there are times when you might want to keep changes.
-
-As shown in the previous section, you can install R and Python packages locally rather than in the container. These packages will still be available after a container restart.
-
-To install binary R packages for Ubuntu Linux you can use the command below. These packages will *not* be installed locally and would normally not be available after a restart.
+Once you have the basic setup done using the code chunk above you should be able to add python packages. The `pyrsm` packages will install several dependencies that you will likely need (e.g., sklearn, pandas, ipykernel, etc.).
 
 ```bash
-sudo apt update;
-sudo apt install r-cran-ada;
+uv add pyrsm
 ```
 
-Similarly, some R-packages have requirements that need to be installed in the container (e.g., the `rgdal` package). The following two linux packages would need to be installed from a terminal in the container as follows:
+Common UV commands for managing packages are listed below. Note that these will give directory specific results:
 
 ```bash
-sudo apt update;
-sudo apt install libgdal-dev libproj-dev;
+uv add <package-name>    # Install a package
+uv remove <package-name> # Remove a package
+uv pip list              # List installed packages in current directory
+uv run python-file.py    # Run a Python file using the virtual environment
 ```
 
-After completing the step above you can install the `rgdal` R-package locally using the following from R:
+For more information about UV:
 
-`install.packages("rgdal", lib = Sys.getenv("R_LIBS_USER"))`
+* <https://www.youtube.com/watch?v=qh98qOND6MI>
+* <https://www.datacamp.com/tutorial/python-uv>
+* <https://github.com/astral-sh/uv>
 
-To save (or commit) these changes so they *will* be present after a (container) restart type, for example, `c myimage` (+ Enter). This creates a new docker image with your changes and also a new launch script on your Desktop with the name `launch-rsm-msba-myimage.command` that you can use to launch your customized environment in the future.
+Add UV shell completions (optional but recommended):
 
-If you want to share your customized version of the container with others (e.g., team members) you can push it is to Docker Hub <a href="https://hub.docker.com" target="_blank">https://hub.docker.com</a> by following the menu dialog after typing, e.g., `c myimage` (+ Enter). To create an account on Docker Hub go to <a href="https://hub.docker.com/signup" target="_blank">https://hub.docker.com/signup</a>.
-
-If you want to remove specific images from your computer run the commands below from a (bash) terminal. The first command generates a list of the images you have available.
-
-`docker image ls;`
-
-Select the IMAGE ID for the image you want to remove, e.g., `42b88eb6adf8`, and then run the following command with the correct image id:
-
-`docker rmi 42b88eb6adf8;`
-
-For additional resources on developing docker images see the links below:
-
-- <https://colinfay.me/docker-r-reproducibility>
-- <https://www.fullstackpython.com/docker.html>
+```bash
+echo 'eval "$(uv generate-shell-completion zsh)"' >> ~/.rsm-msba/zsh/.zshrc
+```
 
 ## Cleanup
-
-To remove any locally installed R-packages, press 6 (+ Enter) in the launch menu. To remove locally installed Python modules press 7 (+ Enter) in the launch menu.
-
-> Note: It is also possible initiate the process of removing locally installed packages and settings from within the container. Open a terminal by pressing 1 (+ Enter) in the launch menu and typing `clean`. Then follow the prompts to indicate what needs to be removed.
 
 You should always stop the `rsm-msba-genai-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove local R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-genai-arm):
 
@@ -236,9 +175,8 @@ docker pull vnijs/rsm-msba-genai-arm;
 
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
-* `launch -t 3.0.0` ensures a specific version of the docker container is used. Suppose you used version 3.0.0 for a project. Running the launch script with `-t 3.0.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
+* `launch -t 0.1.0` ensures a specific version of the docker container is used. Suppose you used version 0.1.0 for a project. Running the launch script with `-t 0.1.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
 * `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
-* `launch -d ~/project_1` will treat the `project_1` directory on the host system (i.e., your macOS computer) as the project home directory in the docker container. This is an additional level of isolation that can help ensure your work is reproducible in the future. This can be particularly useful in combination with the `-t` option as this will make a copy of the launch script with the appropriate `tag` or `version` already set. Simply double-click the script in the `project_1` directory and you will be back in the development environment you used when you completed the project
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 
@@ -256,4 +194,4 @@ If you want to make your terminal look nicer and add syntax highlighting, auto-c
 
 <img src="figures/ohmyzsh-powerlevel10k-iterm.png" width="500px">
 
-To install a more feature-rich terminal for macOS see: <https://iterm2.com/>{target="_blank"}
+To install a more feature-rich terminal for macOS see: <https://iterm2.com?
