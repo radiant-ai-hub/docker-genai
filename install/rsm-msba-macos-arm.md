@@ -9,7 +9,7 @@
 - [Trouble shooting](#trouble-shooting)
 - [Optional](#optional)
 
-## Installing the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip (e.g., M3)
+## Installing the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip (e.g., M3, M4, etc.)
 
 Please follow the instructions below to install the rsm-msba-genai-arm computing environment. It has Python, R, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
@@ -41,15 +41,15 @@ xcode-select --install;
 
 ```bash
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh"' >> ~/.zshrc;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~"' >> ~/.zshrc;
 source ~/.zshrc;
 ```
 
-Now you should be able to use `launch` to start the docker container with any base directory that you want. For example, if you want to run the container with "~/test-dir" as the project directory you can use the below:
+Now you should be able to use `launch` to start the docker container, connected to your home directory on macOS. You can exit the menu that should be shown with q + Enter. 
 
 ```bash
 cd ~;
-launch -v genai-test;
+launch;
 ```
 
 This step will clone and start up a script that will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the container to download and follow any prompts. Once the download is complete you should see a menu as in the screenshot below.
@@ -67,7 +67,7 @@ exit;
 
 ## Updating the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip
 
-To update the container use the launch script and press 5 (+ Enter). To update the launch script itself, press 6 (+ Enter).
+To update the container use the launch script and press 6 (+ Enter). To update the launch script itself, press 7 (+ Enter).
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 
@@ -77,6 +77,8 @@ If for some reason you are having trouble updating either the container or the l
 docker pull vnijs/rsm-msba-genai-arm;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~"' >> ~/.zshrc;
+source ~/.zshrc;
 ```
 
 ## Using VS Code
@@ -122,15 +124,16 @@ You can even open and run Jupyter Notebooks in VS Code
 
 ## Setting up your Python environment
 
-Initialize the environment in the project directory (note the "."):
+Initialize the environment in a project directory, e.g., ~/git/myproject:
 
 ```bash
-uv init .
+uv init ~/git/myproject
 ```
 
 Create a virtual environment with Python 3.12.7 where you can install packages specifically for your project:
 
 ```bash
+cd ~/git/myproject
 uv venv --python 3.12.7
 ```
 
@@ -176,7 +179,6 @@ docker pull vnijs/rsm-msba-genai-arm;
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
 * `launch -t 0.1.0` ensures a specific version of the docker container is used. Suppose you used version 0.1.0 for a project. Running the launch script with `-t 0.1.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
-* `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 

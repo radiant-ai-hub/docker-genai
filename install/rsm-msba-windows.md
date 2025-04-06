@@ -30,7 +30,7 @@ Followed by:
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart;
 ```
 
-Next, restart your computer and re-open PowerShell to install Ubuntu. You will be asked to provide a username and password after install Ubuntu.
+Next, restart your computer and re-open PowerShell as a regular user to install Ubuntu. You will be asked to provide a username and password during the install process.
 
 ```bash
 wsl --set-default-version 2
@@ -75,13 +75,13 @@ wsl --list
 Download and install the Microsoft <a href="https://www.microsoft.com/en-us/p/app-installer/9nblggh4nns1?activetab=pivot:overviewtab" target="_blank">App Installer</a>. After completing the install, open a new PowerShell terminal **as a regular user** and enter the commands below:
 
 ```bash
-winget install -e Microsoft.VisualStudioCode;
 winget install -e Docker.DockerDesktop;
 ```
 
-This will install VS Code and Docker Desktop. If you are using Windows 10, you should also install Windows Terminal using the command below. Windows Terminal is available by default on Windows 11. We recommend you pin Windows Terminal and VS Code to the taskbar as you will use these tools regularly.
+This will install Docker Desktop. If you are using Windows 10, you should also install Windows Terminal and VS Code using the command below. Windows Terminal and VS Code are available by default on Windows 11. We recommend you pin Windows Terminal and VS Code to the taskbar as you will use these tools regularly.
 
 ```bash
+winget install -e Microsoft.VisualStudioCode;
 winget install -e Microsoft.WindowsTerminal;
 ```
 
@@ -101,7 +101,7 @@ Next click on _Resources > WSL INTEGRATION_ and ensure integration with Ubuntu i
 
 Optional: If you are interested, this linked video gives a brief intro to what Docker is: https://www.youtube.com/watch?v=YFl2mCHdv24
 
-**Step 4**: Open an Ubuntu terminal to complete RSM-MSBA-GENAI-INTEL computing environment setup
+**Step 4**: Open an Ubuntu terminal to complete RSM-MSBA-GENAI-INTEL environment setup
 
 If you are using Windows Terminal you can click on the down-caret at the top of the window to start an Ubuntu terminal as shown in the screenshot below. Alternatively, you can click on the Windows Start icon and type "ubuntu" to start an Ubuntu terminal. Copy-and-paste the code below into the Ubuntu terminal and provide your password when prompted.
 
@@ -115,15 +115,15 @@ Now Ubuntu should be up to date and ready to accept commands to clone the docker
 
 ```bash
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh"' >> ~/.zshrc;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~"' >> ~/.zshrc;
 source ~/.zshrc;
 ```
 
-Now you should be able to use `launch` to start the docker container with any base directory that you want. For example, if you want to run the container with "~/test-dir" as the project directory you can use the below:
+Now you should be able to use `launch` to start the docker container, connected to your home directory in Ubuntu 24.04. You can exit the menu that should be shown with q + Enter. 
 
 ```bash
 cd ~;
-launch -v genai-test;
+launch;
 ```
 
 Next, determine your Windows username by running the code below from an Ubuntu terminal:
@@ -186,7 +186,7 @@ sudo usermod -aG sudo your-id
 Now, from a Powershell terminal run the below where, again, you should replace "your-id" by the appropriate id:
 
 ```powershell
-ubuntu2204 config --default-user your-id
+ubuntu2404 config --default-user your-id
 ```
 
 Next, re-run the code from Step 4 above, starting with the command:
@@ -194,8 +194,6 @@ Next, re-run the code from Step 4 above, starting with the command:
 ```bash
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker;
 ```
-
-
 
 **Step 4**: Check that you can launch Radiant
 
@@ -224,7 +222,7 @@ If for some reason you are having trouble updating either the container or the l
 docker pull vnijs/rsm-msba-genai-intel;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh"' >> ~/.zshrc;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~"' >> ~/.zshrc;
 source ~/.zshrc;
 ```
 
@@ -263,15 +261,16 @@ You can even open and run Jupyter Notebooks in VS Code
 
 ## Setting up your Python environment
 
-Initialize the environment in the project directory (note the "."):
+Initialize the environment in a project directory, e.g., ~/git/myproject:
 
 ```bash
-uv init .
+uv init ~/git/myproject
 ```
 
 Create a virtual environment with Python 3.12.7 where you can install packages specifically for your project:
 
 ```bash
+cd ~/git/myproject
 uv venv --python 3.12.7
 ```
 
@@ -317,7 +316,6 @@ docker pull vnijs/rsm-msba-genai-intel;
 Please bookmark this page in your browser for easy access in the future. You can also access the documentation page for your OS by typing h (+ Enter) in the launch menu. Note that the launch script can also be started from the command line (i.e., a bash terminal) and has several important arguments:
 
 * `launch -t 0.1.0` ensures a specific version of the docker container is used. Suppose you used version 0.1.0 for a project. Running the launch script with `-t 0.1.0` from the command line will ensure your code still runs, without modification, years after you last touched it!
-* `launch -v ~/rsm-msba` will treat the `~/rsm-msba` directory on the host system (i.e., your macOS computer) as the home directory in the docker container. This can be useful if you want to setup a particular directory that will house multiple projects
 * `launch -s` show additional output in the terminal that can be useful to debug any problems
 * `launch -h` prints the help shown in the screenshot below
 
@@ -331,7 +329,7 @@ Alternative "fixes" that have worked, are to restart docker by right-clicking on
 
 ## Optional
 
-If you want to make your terminal look nicer and add syntax highlighting, auto-completion, etc. consider following the install instructions linked below:
+If you want to make your terminal look nicer and add syntax highlighting, auto-completion, etc. follow the install instructions linked below:
 
 <https://github.com/radiant-ai-hub/docker-genai/blob/main/install/setup-ohmyzsh.md>
 
