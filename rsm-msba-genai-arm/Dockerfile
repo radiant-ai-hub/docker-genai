@@ -1,5 +1,3 @@
-# from https://hub.docker.com/r/nikolaik/python-nodejs
-# FROM nikolaik/python-nodejs:python3.12-nodejs23
 FROM vnijs/ubuntu-python-node-arm:latest
 
 USER root

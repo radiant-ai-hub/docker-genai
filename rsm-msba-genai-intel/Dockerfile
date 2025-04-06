@@ -1,8 +1,8 @@
-# from https://hub.docker.com/r/nikolaik/python-nodejs
-FROM nikolaik/python-nodejs:python3.12-nodejs23
+FROM vnijs/ubuntu-python-node-arm:latest
 
 USER root
 
+LABEL maintainer="Vincent Nijs <vnijs@ucsd.edu>"
 # Define build argument and set it as an environment variable in one step
 ARG DOCKERHUB_VERSION
 ENV DOCKERHUB_VERSION=${DOCKERHUB_VERSION}
@@ -11,11 +11,24 @@ ENV QUARTO_VERSION="1.7.5"
 ENV TERM=xterm
 ENV PATH="/usr/local/bin:$PATH"
 
+# section adapted from https://github.com/jupyter/docker-stacks/blob/main/images/docker-stacks-foundation/Dockerfile
+ARG NB_USER="jovyan"
+ARG NB_UID="1000"
+ARG NB_GID="100"
+
+ENV NB_USER="${NB_USER}" \
+    NB_UID=${NB_UID} \
+    NB_GID=${NB_GID} \
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    HOME="/home/${NB_USER}"
+
 # postgres env variables
 ENV POSTGRES_VERSION=16
 ENV PGPASSWORD=postgres
 
-# Jupyter and shell environment setup
+# shell environment setup
 ARG RSMBASE=/home/${NB_USER}/.rsm-msba
 ENV RSMBASE=${RSMBASE} \
     SHELL=/bin/zsh \

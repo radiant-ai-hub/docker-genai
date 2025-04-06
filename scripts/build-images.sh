@@ -79,7 +79,7 @@ else
     LABEL=rsm-msba-genai-intel
     echo $LABEL
     build
-  # fi
+  fi
 fi
 
 # run script using to ensure it keeps running on a server even if the connection goes down
