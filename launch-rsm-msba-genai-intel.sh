@@ -44,7 +44,7 @@ function launch_usage() {
   echo "  -s, --show        Show all output generated on launch"
   echo "  -h, --help        Print help and exit"
   echo ""
-  echo "Example: $0 --tag 1.0.0 --volume ~/project_1"
+  echo "Example: $0 -t 0.1.0 -v ~/myproject"
   echo ""
   exit 1
 }
@@ -519,7 +519,6 @@ else
     elif [ "${menu_exec}" == "h" ]; then
       echo $BOUNDARY
       echo "Showing help for your OS in the default browser"
-      echo "Showing help to start the docker container from the command line"
       echo ""
       if [[ "$ostype" == "macOS" ]]; then
         if [[ "$archtype" == "arm64" ]]; then
@@ -538,9 +537,7 @@ else
       else
         open_browser https://github.com/radiant-ai-hub/docker-genai/blob/main/install/rsm-msba-linux.md
       fi
-      $0 --help
       echo "Press any key to continue"
-      echo $BOUNDARY
       read continue
     elif [ "${menu_exec}" == "c" ]; then
       container_id=($(docker ps -a | awk "/${ID}\/${LABEL}/" | awk '{print $1}'))
@@ -582,7 +579,7 @@ else
       echo $BOUNDARY
       echo "Do you want to push this image to Docker hub (y/n)?"
       echo "Note: This requires an account at https://hub.docker.com/"
-      echo "Note: To specify a version tag type, e.g., y 1.0.0"
+      echo "Note: To specify a version tag type, e.g., y 0.1.0"
       echo $BOUNDARY
       read menu_push menu_tag
       if [ "${menu_push}" == "y" ]; then

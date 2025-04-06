@@ -11,7 +11,7 @@
 
 ## Installing the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip (e.g., M3, M4, etc.)
 
-Please follow the instructions below to install the rsm-msba-genai-arm computing environment. It has Python, R, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
+Please follow the instructions below to install the rsm-msba-genai-arm computinglenvironment. It has Python, Postgres, UV, etc. pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
 **Step 1**: Install docker from the link below and make sure it is running. You will know it is running if you see the icon below at the top-right of your screen. If the containers in the image are moving up and down docker hasn't finished starting up yet.
 
@@ -67,7 +67,7 @@ exit;
 
 ## Updating the RSM-MSBA-GENAI-ARM computing environment on macOS systems with an ARM chip
 
-To update the container use the launch script and press 6 (+ Enter). To update the launch script itself, press 7 (+ Enter).
+To update the container use the launch script and press 5 (+ Enter). To update the launch script itself, press 6 (+ Enter).
 
 <img src="figures/rsm-launch-menu-macos-arm.png" width="500px">
 

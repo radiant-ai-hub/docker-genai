@@ -3,7 +3,6 @@
 - [Installing the RSM-MSBA-GENAI-INTEL computing environment on Windows](#installing-the-rsm-msba-genai-intel-computing-environment-on-windows)
 - [Updating the RSM-MSBA-GENAI-INTEL computing environment on Windows](#updating-the-rsm-msba-genai-intel-computing-environment-on-windows)
 - [Using VS Code](#using-vs-code)
-- [Installing Python packages locally](#installing-python-and-r-packages-locally)
 - [Committing changes to the computing environment](#committing-changes-to-the-computing-environment)
 - [Getting help](#getting-help)
 - [Trouble shooting](#trouble-shooting)
@@ -11,7 +10,7 @@
 
 ## Installing the RSM-MSBA-GENAI-INTEL computing environment on Windows
 
-Please follow the instructions below to install the rsm-msba-genai-intel computing environment. It has Python, R, Radiant, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
+Please follow the instructions below to install the rsm-msba-genai-intel computing environment. It has Python, Postgres, Spark and various required packages pre-installed. The computing environment will be consistent across all students and faculty, easy to update, and also easy to remove if desired (i.e., there will *not* be dozens of pieces of software littered all over your computer).
 
 **Step 1**: Upgrade Windows
 
@@ -72,7 +71,7 @@ wsl --list
 
 **Step 3**: Install Windows Tools
 
-Download and install the Microsoft <a href="https://www.microsoft.com/en-us/p/app-installer/9nblggh4nns1?activetab=pivot:overviewtab" target="_blank">App Installer</a>. After completing the install, open a new PowerShell terminal **as a regular user** and enter the commands below:
+Download and install the Microsoft <a href="https://apps.microsoft.com/detail/9nblggh4nns1" target="_blank">App Installer</a>. After completing the install, open a new PowerShell terminal **as a regular user** and enter the commands below:
 
 ```bash
 winget install -e Docker.DockerDesktop;
@@ -115,7 +114,7 @@ Now Ubuntu should be up to date and ready to accept commands to clone the docker
 
 ```bash
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~"' >> ~/.zshrc;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~"' >> ~/.zshrc;
 source ~/.zshrc;
 ```
 
@@ -126,47 +125,7 @@ cd ~;
 launch;
 ```
 
-Next, determine your Windows username by running the code below from an Ubuntu terminal:
-
-```bash
-USERNAME=$(powershell.exe '$env:UserName'|tr -d '\r');
-echo $USERNAME;
-```
-
-Finally, we will create and launch a script `launch-rsm-msba.bat` on your Desktop that you can double-click to start the container in the future. 
-
-The code below will try to determine if you have a Desktop folder that is Backed-Up to OneDrive. 
-
-```bash
-if [ -d "/mnt/c/Users/$USERNAME/OneDrive/Desktop/" ]; then
-  echo "Using Desktop backed up in OneDrive" >&2
-  DTOP="/OneDrive/Desktop";
-elif [ -d "/mnt/c/Users/$USERNAME/Desktop/" ]; then
-  echo "Using Desktop folder in user home directory" >&2
-  DTOP="/Desktop";
-else
-  DTOP="";
-fi
-if [ -n "$DTOP" ]; then
-  echo "wt.exe wsl.exe ~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~" > /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
-  chmod 755 /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
-  cd ~;
-  ln -s /mnt/c/Users/"$USERNAME$DTOP"/ ./Desktop;
-  /mnt/c/Users/"$USERNAME$DTOP"/launch-rsm-msba.bat;
-else
-  echo "Unable to determine location of Desktop folder on your system" >&2
-  echo "The .bat file has been added to your home directory in Ubuntunu" >&2
-  echo "wt.exe wsl.exe ~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~" > /mnt/c/Users/"$USERNAME"/launch-rsm-msba.bat;
-  chmod 755 /mnt/c/Users/"$USERNAME"/launch-rsm-msba.bat;
-fi
-ln -s /mnt/c/Users/"$USERNAME"/Dropbox ./Dropbox;
-ln -s /mnt/c/Users/"$USERNAME"/Downloads ./Downloads;
-ln -s "/mnt/c/Users/$USERNAME/Google Drive" "./Google Drive";
-ln -s /mnt/c/Users/"$USERNAME"/OneDrive ./OneDrive;
-ln -s /mnt/c/Users/"$USERNAME" ./win_home;
-```
-
-The created and launched script will finalize the installation of the computing environment. The first time you run this script it will download the latest version of the computing environment which can take some time. Wait for the image to download and follow any prompts. Once the download is complete you should see a menu as in the screen shot below.
+The first time you run the launch command it will download the latest version of the computing environment which can take some time. Wait for the image to download and follow any prompts. Once the download is complete you should see a menu as in the screen shot below.
 
 <img src="figures/rsm-launch-menu-wsl2.png" width="500px">
 
@@ -195,13 +154,7 @@ Next, re-run the code from Step 4 above, starting with the command:
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker;
 ```
 
-**Step 4**: Check that you can launch Radiant
-
-You will know that the installation was successful if you can start Radiant. If you press 2 (+ Enter) Radiant should start up in your default web browser.
-
 > Important: Always use q (+ Enter) to shutdown the computing environment
-
-<img src="figures/radiant-data-manage.png" width="500px">
 
 To finalize the setup, open a terminal inside the docker container by pressing `1` and `Enter` in the launch menu. Then run the command below:
 
@@ -212,7 +165,7 @@ exit;
 
 ## Updating the RSM-MSBA-GENAI-INTEL computing environment on Windows
 
-To update the container use the launch script and press 6 (and Enter). To update the launch script itself, press 7 (and Enter).
+To update the container use the launch script and press 5 (and Enter). To update the launch script itself, press 6 (and Enter).
 
 <img src="figures/rsm-launch-menu-wsl2.png" width="500px">
 
@@ -222,7 +175,7 @@ If for some reason you are having trouble updating either the container or the l
 docker pull vnijs/rsm-msba-genai-intel;
 rm -rf ~/git/docker*;
 git clone https://github.com/radiant-ai-hub/docker-genai.git ~/git/docker-genai;
-echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-arm.sh -v ~"' >> ~/.zshrc;
+echo 'alias launch="~/git/docker-genai/launch-rsm-msba-genai-intel.sh -v ~"' >> ~/.zshrc;
 source ~/.zshrc;
 ```
 
@@ -303,7 +256,7 @@ echo 'eval "$(uv generate-shell-completion zsh)"' >> ~/.rsm-msba/zsh/.zshrc
 
 ## Cleanup
 
-You should always stop the `rsm-msba-genai-arm` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from a (bash) terminal to (1) remove local R and Python packages, (2) remove all docker images, networks, and (data) volumes, and (3) 'pull' only the docker image you need (e.g., rsm-msba-genai-arm):
+You should always stop the `rsm-msba-genai-intel` docker container using `q` (+ Enter) in the launch menu. If you want a full cleanup and reset of the computational environment on your system, however, execute the following commands from an Ubuntu terminal to remove all docker images, networks, and (data) volumes, 'pull' only the docker image you need (e.g., rsm-msba-genai-intel):
 
 ```bash
 rm -rf ~/.rsm-msba;
