@@ -39,7 +39,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # Verify Node.js architecture
-RUN node -e 'if (process.arch !== "amd64") { console.error("Node.js must be AMD64 version"); process.exit(1); }'
+RUN node -e 'if (process.arch !== "x64") { console.error("Node.js must be AMD64 version"); process.exit(1); }'
 
 # Verify versions and architectures
 RUN echo "Architecture:" && dpkg --print-architecture && \
@@ -47,6 +47,6 @@ RUN echo "Architecture:" && dpkg --print-architecture && \
     echo "Node version:" && node --version && \
     echo "Testing Python packages:" && \
     python3 -c "import requests; import argparse; print('Packages successfully imported')" && \
-    python3 -c 'import platform; assert "amd64" in platform.machine(), "Python must be AMD64 version"'
+    python3 -c 'import platform; assert "x86_64" in platform.machine(), "Python must be AMD64 version"'
 
 CMD ["/bin/bash"]
