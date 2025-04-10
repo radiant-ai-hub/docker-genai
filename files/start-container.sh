@@ -44,6 +44,9 @@ echo "Starting PostgreSQL service..."
 sudo -u postgres /usr/lib/postgresql/${POSTGRES_VERSION}/bin/postgres \
     -c config_file=/etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf &
 
+echo "Starting n8n ..."
+sudo /usr/local/bin/n8n start \
+
 echo "All services started. Tailing logs..."
 tail -f /var/log/sshd/sshd.log &
 sleep 2

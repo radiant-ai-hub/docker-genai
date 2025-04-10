@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     software-properties-common \
     build-essential \
+    graphicsmagick \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Add deadsnakes PPA for Python 3.12
@@ -32,8 +34,8 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
     && update-alternatives --set python3 /usr/bin/python3.12 \
     && ln -s /usr/bin/python3 /usr/bin/python
 
-# Install Node.js 23 for ARM64
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
+# Install Node.js 22 for ARM64
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
@@ -49,4 +51,28 @@ RUN echo "Architecture:" && dpkg --print-architecture && \
     python3 -c "import requests; import argparse; print('Packages successfully imported')" && \
     python3 -c 'import platform; assert "aarch64" in platform.machine(), "Python must be ARM64 version"'
 
-CMD ["/bin/bash"]
+# Rename user 'pn' to 'node' so that n8n runs as node
+# RUN usermod --login node --move-home --home /home/node pn && \
+#     groupmod --new-name node pn
+
+# specify n8n version to use
+ENV N8N_VERSION=1.87.2
+
+# Install n8n (using the specified version) and any ICU support if needed
+# Install the n8n-nodes-python module and any additional node modules you require
+# For example, if you have another node module to install, add it after n8n-nodes-python
+RUN npm_config_user=root npm install -g full-icu n8n@${N8N_VERSION}
+RUN cd $(npm root -g)/n8n && npm install n8n-nodes-python
+
+# Set ICU environment variable if required
+ENV NODE_ICU_DATA=/usr/lib/node_modules/full-icu
+
+EXPOSE 5678/tcp
+
+CMD ["n8n"]
+# CMD ["/usr/local/bin/start-container.sh"]
+
+# switch back to jovyan to avoid accidental container runs as root
+# USER ${NB_UID}
+# ENV HOME /home/${NB_USER}
+# WORKDIR "${HOME}"
