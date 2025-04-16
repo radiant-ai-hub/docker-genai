@@ -1,4 +1,4 @@
-FROM vnijs/ubuntu-python-node-arm:latest
+FROM vnijs/ubuntu-python-node-intel:latest
 
 USER root
 
