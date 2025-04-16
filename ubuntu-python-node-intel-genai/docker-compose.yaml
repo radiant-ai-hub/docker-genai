@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  n8n:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NPM_CONFIG_NETWORK_TIMEOUT=300000  # 5 minute timeout
+    container_name: n8n-python
+    ports:
+      - "5678:5678"
+    environment:
+      - USER=node
+      - NODE_ENV=production
+      - N8N_ENCRYPTION_KEY=your-encryption-key-here  # Change this in production
+      - GENERIC_TIMEZONE=UTC
+      - PYTHONUNBUFFERED=1  # Ensures Python output is not buffered
+    volumes:
+      - n8n_local_data:/home/node/.n8n
+    restart: unless-stopped
+
+volumes:
+  n8n_local_data:
