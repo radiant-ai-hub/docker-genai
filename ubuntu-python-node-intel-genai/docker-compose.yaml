@@ -1,24 +1,119 @@
-version: '3.8'
+# version: '3.8'
 
+# services:
+#   n8n:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#       args:
+#         - NPM_CONFIG_NETWORK_TIMEOUT=300000  # 5 minute timeout
+#     container_name: n8n-python
+#     ports:
+#       - "5678:5678"
+#     environment:
+#       - USER=node
+#       - NODE_ENV=production
+#       - N8N_ENCRYPTION_KEY=your-encryption-key-here  # Change this in production
+#       - GENERIC_TIMEZONE=UTC
+#       - PYTHONUNBUFFERED=1  # Ensures Python output is not buffered
+#     volumes:
+#       - n8n_local_data:/home/node/.n8n
+#     restart: unless-stopped
+
+# volumes:
+#   n8n_local_data:
+
+version: '3.8'
 services:
   n8n:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - NPM_CONFIG_NETWORK_TIMEOUT=300000  # 5 minute timeout
+        - NPM_CONFIG_NETWORK_TIMEOUT=300000
     container_name: n8n-python
     ports:
-      - "5678:5678"
+       - "5678:5678"
     environment:
       - USER=node
       - NODE_ENV=production
-      - N8N_ENCRYPTION_KEY=your-encryption-key-here  # Change this in production
-      - GENERIC_TIMEZONE=UTC
-      - PYTHONUNBUFFERED=1  # Ensures Python output is not buffered
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-UTC}
+      - PYTHONUNBUFFERED=1
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - MCP_CUSTOM_VAR=value
+      - MCP_BRAVE_API_KEY=BSA6vue4CNWSnI54QNrDcw_QqiyfqIi
+      - MCP_OPENAI_API_KEY=sk-proj-V1eqy9M63nV0K_B4nGjvpg7pgwAyAj6
     volumes:
       - n8n_local_data:/home/node/.n8n
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.n8n.entrypoints=websecure
+      - traefik.http.routers.n8n.tls=true
+      - traefik.http.services.n8n.loadbalancer.server.port=5678
+      - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
+      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
+      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
+      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
+      - traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN_NAME}
+      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.n8n.headers.STSPreload=true
+      - traefik.http.routers.n8n.middlewares=n8n@docker
+
+  postgres:
+    image: postgres:16  # Updated to PostgreSQL 16 to match your existing data
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_data:/etc/traefik/acme
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.email=${SSL_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme/acme.json
 
 volumes:
   n8n_local_data:
+  postgres_data:
+  traefik_data:
